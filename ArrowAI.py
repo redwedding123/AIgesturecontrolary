@@ -1,3 +1,5 @@
+# Control arrow keys with just a wave—gesture-powered navigation using computer vision.  
+# Perfect for touchless gaming, slick slideshows, or futuristic UI hacks.
 import cv2
 import time
 import pyautogui
