@@ -1,3 +1,5 @@
+# Controls system volume using hand gestures detected through real-time tracking.  
+# Built with MediaPipe and OpenCV for seamless, touch-free interaction.
 import cv2
 import time
 import numpy as np
