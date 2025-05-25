@@ -1,3 +1,5 @@
+# Enables cursor control using hand gestures via real-time hand tracking.  
+# Ideal for touchless interaction; built on MediaPipe and OpenCV.
 import cv2
 import numpy as np
 import HandTrackingModule as htm
