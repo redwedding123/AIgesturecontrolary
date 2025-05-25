@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>High-Density Particle Disruptor</title>
+<style>
+  html, body {
+    margin: 0; 
+    overflow: hidden;
+    background: #111;
+    height: 100vh;
+    cursor: none;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+const particles = [];
+const PARTICLE_COUNT = 500; // Increased from 200
+const MAX_DIST = 80; // Slightly reduced to maintain visual clarity
+
+function resize() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+  constructor() {
+    this.baseX = Math.random() * width;
+    this.baseY = Math.random() * height;
+    this.x = this.baseX;
+    this.y = this.baseY;
+    this.size = 1 + Math.random() * 1.5;
+    this.vx = 0;
+    this.vy = 0;
+  }
+
+  update(mouse) {
+    const dx = this.x - mouse.x;
+    const dy = this.y - mouse.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    const influenceRadius = 100;
+
+    if(dist < influenceRadius) {
+      const force = (influenceRadius - dist) / influenceRadius;
+      const angle = Math.atan2(dy, dx);
+      const repelStrength = force * force * 6;
+      this.vx += Math.cos(angle) * repelStrength;
+      this.vy += Math.sin(angle) * repelStrength;
+    } else {
+      this.vx += (this.baseX - this.x) * 0.05;
+      this.vy += (this.baseY - this.y) * 0.05;
+    }
+
+    this.vx *= 0.85;
+    this.vy *= 0.85;
+
+    this.x += this.vx;
+    this.y += this.vy;
+  }
+
+  draw() {
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+for(let i=0; i<PARTICLE_COUNT; i++) {
+  particles.push(new Particle());
+}
+
+const mouse = {
+  x: width / 2,
+  y: height / 2
+};
+
+window.addEventListener('mousemove', (e) => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+
+function drawLines() {
+  for(let i=0; i<PARTICLE_COUNT; i++) {
+    const p1 = particles[i];
+    for(let j=i+1; j<PARTICLE_COUNT; j++) {
+      const p2 = particles[j];
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if(dist < MAX_DIST) {
+        const alpha = 0.08 * (1 - dist / MAX_DIST);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.fillStyle = 'rgba(17,17,17,0.2)';
+  ctx.fillRect(0, 0, width, height);
+
+  particles.forEach(p => p.update(mouse));
+  particles.forEach(p => p.draw());
+  drawLines();
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
