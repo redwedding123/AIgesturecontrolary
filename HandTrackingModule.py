@@ -1,3 +1,5 @@
+# Hand tracking core powered by computer vision — tracks fingers in real-time.  
+# Based on Murtaza's tutorial on YouTube (Mediapipe + OpenCV magic).
 import cv2
 import mediapipe as mp
 import time
